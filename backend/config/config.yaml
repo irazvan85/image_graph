@@ -1,0 +1,58 @@
+# ImageGraph Configuration
+
+# Processing Settings
+processing:
+  batch_size: 10
+  max_workers: 4
+  similarity_threshold: 0.7
+  confidence_threshold: 0.3
+  image_similarity_threshold: 0.85
+
+# Analyzers
+analyzers:
+  ocr:
+    enabled: true
+    engine: "tesseract"  # or "easyocr"
+    languages: ["eng"]
+  
+  captioning:
+    enabled: true
+    model: "blip-base"  # or "blip-large"
+  
+  object_detection:
+    enabled: false  # Set to true to use YOLO
+    model: "yolov8n"
+  
+  face_detection:
+    enabled: false
+  
+  embeddings:
+    enabled: true
+    model: "clip-ViT-B/32"  # or "sentence-transformers/clip-ViT-B-32"
+
+# LLM Mode (Optional)
+llm:
+  enabled: true
+  provider: "openai"  # or "anthropic", "local"
+  api_key: "LLM_API_KEY"  # Set in environment variable LLM_API_KEY
+  model: "gpt-4-vision-preview"
+  use_for_entities: true
+  use_for_relations: true
+
+# Storage
+storage:
+  database_path: "data/imagegraph.db"
+  vector_index_path: "data/faiss_index"
+  thumbnails_path: "data/thumbnails"
+  cache_results: true
+
+# Graph Settings
+graph:
+  min_concept_weight: 0.1
+  max_concepts_per_image: 20
+  co_occurrence_decay: 0.95
+
+# UI Settings
+ui:
+  max_thumbnail_size: 200
+  graph_layout: "cose"  # cose, grid, circle, etc.

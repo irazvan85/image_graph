@@ -1,0 +1,237 @@
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import FolderSelector from './components/FolderSelector'
+import GraphView from './components/GraphView'
+import ImageDetail from './components/ImageDetail'
+import ProgressBar from './components/ProgressBar'
+import Filters from './components/Filters'
+import AnalyzerStatus from './components/AnalyzerStatus'
+import './App.css'
+
+function App() {
+  const [selectedFolder, setSelectedFolder] = useState(null)
+  const [graph, setGraph] = useState({ nodes: [], edges: [] })
+  const [selectedImage, setSelectedImage] = useState(null)
+  const [progress, setProgress] = useState(null)
+  const [filters, setFilters] = useState({
+    min_confidence: 0.3,
+    min_similarity: 0.7,
+    search_query: ''
+  })
+  const graphLoadedRef = useRef(false)
+
+  const loadGraph = useCallback(async () => {
+    try {
+      const params = new URLSearchParams()
+      if (filters.min_confidence !== undefined) {
+        params.append('min_confidence', filters.min_confidence)
+      }
+      if (filters.min_similarity !== undefined) {
+        params.append('min_similarity', filters.min_similarity)
+      }
+      if (filters.search_query) {
+        params.append('search_query', filters.search_query)
+      }
+      if (filters.concept_types && filters.concept_types.length > 0) {
+        params.append('concept_types', filters.concept_types.join(','))
+      }
+      
+      const response = await fetch(`/api/graph?${params}`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const data = await response.json()
+      
+      // Ensure data has expected structure
+      if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.edges)) {
+        console.error('Invalid graph data structure:', data)
+        setGraph({ nodes: [], edges: [] })
+        return
+      }
+      
+      setGraph(data)
+      graphLoadedRef.current = true
+    } catch (error) {
+      console.error('Error loading graph:', error)
+      // Set empty graph on error to prevent crashes
+      setGraph({ nodes: [], edges: [] })
+    }
+  }, [filters])
+
+  useEffect(() => {
+    // Poll for progress only if folder is selected
+    if (!selectedFolder) return
+
+    let intervalId = null
+    
+    const pollProgress = async () => {
+      try {
+        const response = await fetch('/api/progress')
+        const data = await response.json()
+        setProgress(data)
+        
+        // If processing is complete, refresh graph once and stop polling
+        if (data.status === 'completed' && !graphLoadedRef.current) {
+          await loadGraph()
+          if (intervalId) {
+            clearInterval(intervalId)
+            intervalId = null
+          }
+        } else if (data.status === 'error' || data.status === 'cancelled') {
+          // Stop polling on error or cancellation
+          if (intervalId) {
+            clearInterval(intervalId)
+            intervalId = null
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching progress:', error)
+      }
+    }
+
+    // Start polling
+    intervalId = setInterval(pollProgress, 1000)
+    
+    // Initial poll
+    pollProgress()
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [selectedFolder, loadGraph])
+
+  useEffect(() => {
+    // Load graph when filters change (but only if folder is selected and graph was already loaded once)
+    if (selectedFolder && graphLoadedRef.current) {
+      loadGraph()
+    }
+  }, [filters, selectedFolder, loadGraph])
+
+  const handleFolderSelect = async (folderPath) => {
+    setSelectedFolder(folderPath)
+    setSelectedImage(null)
+    setGraph({ nodes: [], edges: [] })
+    graphLoadedRef.current = false
+    
+    try {
+      const response = await fetch('/api/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder_path: folderPath })
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to start scan')
+      }
+    } catch (error) {
+      console.error('Error starting scan:', error)
+      alert('Failed to start scan. Make sure the backend is running.')
+    }
+  }
+
+  const handleRescan = async () => {
+    if (!selectedFolder) return
+    
+    graphLoadedRef.current = false
+    
+    try {
+      const response = await fetch('/api/rescan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder_path: selectedFolder })
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to start rescan')
+      }
+    } catch (error) {
+      console.error('Error starting rescan:', error)
+    }
+  }
+
+  const handleNodeClick = useCallback((node) => {
+    if (node.type === 'image') {
+      setSelectedImage(node.id)
+    }
+  }, [])
+
+  const handleExport = async (format) => {
+    try {
+      const response = await fetch(`/api/export?format=${format}`)
+      const data = await response.json()
+      
+      const blob = format === 'json' 
+        ? new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+        : new Blob([data[format] || data.graphml || data.cypher], { type: 'text/plain' })
+      
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `imagegraph.${format === 'json' ? 'json' : format === 'graphml' ? 'graphml' : 'cypher'}`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Error exporting:', error)
+      alert('Failed to export graph')
+    }
+  }
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <h1>ImageGraph</h1>
+        <div className="header-actions">
+          {selectedFolder && (
+            <>
+              <button onClick={handleRescan} className="btn-secondary">
+                Rescan Folder
+              </button>
+              <button onClick={() => handleExport('json')} className="btn-secondary">
+                Export JSON
+              </button>
+              <button onClick={() => handleExport('graphml')} className="btn-secondary">
+                Export GraphML
+              </button>
+              <button onClick={() => handleExport('cypher')} className="btn-secondary">
+                Export Cypher
+              </button>
+            </>
+          )}
+        </div>
+      </header>
+
+      <main className="app-main">
+        {!selectedFolder ? (
+          <FolderSelector onSelect={handleFolderSelect} />
+        ) : (
+          <>
+            <div className="sidebar">
+              <AnalyzerStatus />
+              <Filters filters={filters} onFiltersChange={setFilters} />
+              {progress && progress.status !== 'idle' && (
+                <ProgressBar progress={progress} />
+              )}
+            </div>
+            
+            <div className="graph-container">
+              <GraphView 
+                graph={graph} 
+                onNodeClick={handleNodeClick}
+              />
+            </div>
+
+            {selectedImage && (
+              <ImageDetail 
+                imageId={selectedImage} 
+                onClose={() => setSelectedImage(null)} 
+              />
+            )}
+          </>
+        )}
+      </main>
+    </div>
+  )
+}
+
+export default App

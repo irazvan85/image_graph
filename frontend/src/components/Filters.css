@@ -1,0 +1,46 @@
+.filters {
+  margin-bottom: 2rem;
+}
+
+.filters h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.filter-group {
+  margin-bottom: 1.5rem;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #34495e;
+  font-weight: 500;
+}
+
+.filter-group input[type="range"] {
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.filter-value {
+  display: block;
+  text-align: right;
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+}

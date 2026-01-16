@@ -1,0 +1,130 @@
+.analyzer-status {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.analyzer-status-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  color: #2c3e50;
+}
+
+.analyzer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.analyzer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.status-indicator.status-enabled {
+  background: #27ae60;
+  color: white;
+}
+
+.status-indicator.status-disabled {
+  background: #e74c3c;
+  color: white;
+}
+
+.analyzer-name {
+  font-weight: 500;
+  color: #34495e;
+  min-width: 100px;
+}
+
+.analyzer-detail {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.llm-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #e0e0e0;
+}
+
+.llm-status {
+  padding: 0.75rem;
+  border-radius: 4px;
+  background: white;
+}
+
+.llm-status.llm-active {
+  border: 2px solid #27ae60;
+  background: #f0fdf4;
+}
+
+.llm-status.llm-inactive {
+  border: 2px solid #e0e0e0;
+  background: #fafafa;
+}
+
+.llm-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.llm-label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.llm-details {
+  margin-top: 0.5rem;
+  padding-left: 1.5rem;
+}
+
+.llm-detail-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.llm-detail-label {
+  font-weight: 500;
+  color: #7f8c8d;
+  min-width: 60px;
+}
+
+.llm-detail-value {
+  color: #2c3e50;
+  font-family: 'Courier New', monospace;
+}
+
+.llm-warning {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #856404;
+}
