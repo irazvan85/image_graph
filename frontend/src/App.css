@@ -54,6 +54,20 @@
   overflow-y: auto;
 }
 
+.demo-banner {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.demo-banner a {
+  color: white;
+  text-decoration: underline;
+}
+
 .graph-container {
   flex: 1;
   position: relative;

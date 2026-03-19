@@ -5,10 +5,12 @@ import ImageDetail from './components/ImageDetail'
 import ProgressBar from './components/ProgressBar'
 import Filters from './components/Filters'
 import AnalyzerStatus from './components/AnalyzerStatus'
+import { DEMO_GRAPH } from './demoData'
 import './App.css'
 
 function App() {
   const [selectedFolder, setSelectedFolder] = useState(null)
+  const [isDemoMode, setIsDemoMode] = useState(false)
   const [graph, setGraph] = useState({ nodes: [], edges: [] })
   const [selectedImage, setSelectedImage] = useState(null)
   const [progress, setProgress] = useState(null)
@@ -58,8 +60,8 @@ function App() {
   }, [filters])
 
   useEffect(() => {
-    // Poll for progress only if folder is selected
-    if (!selectedFolder) return
+    // Poll for progress only if folder is selected and not in demo mode
+    if (!selectedFolder || isDemoMode) return
 
     let intervalId = null
     
@@ -99,17 +101,18 @@ function App() {
         clearInterval(intervalId)
       }
     }
-  }, [selectedFolder, loadGraph])
+  }, [selectedFolder, isDemoMode, loadGraph])
 
   useEffect(() => {
     // Load graph when filters change (but only if folder is selected and graph was already loaded once)
-    if (selectedFolder && graphLoadedRef.current) {
+    if (selectedFolder && graphLoadedRef.current && !isDemoMode) {
       loadGraph()
     }
-  }, [filters, selectedFolder, loadGraph])
+  }, [filters, selectedFolder, isDemoMode, loadGraph])
 
   const handleFolderSelect = async (folderPath) => {
     setSelectedFolder(folderPath)
+    setIsDemoMode(false)
     setSelectedImage(null)
     setGraph({ nodes: [], edges: [] })
     graphLoadedRef.current = false
@@ -124,14 +127,31 @@ function App() {
       if (!response.ok) {
         throw new Error('Failed to start scan')
       }
+
+      const data = await response.json()
+      if (data.status === 'demo') {
+        // Demo deployment: load demo graph and switch to demo mode
+        setIsDemoMode(true)
+        setGraph(DEMO_GRAPH)
+        graphLoadedRef.current = true
+      }
     } catch (error) {
       console.error('Error starting scan:', error)
       alert('Failed to start scan. Make sure the backend is running.')
     }
   }
 
+  const handleDemoSelect = () => {
+    setSelectedFolder('Demo Mode')
+    setIsDemoMode(true)
+    setSelectedImage(null)
+    setGraph(DEMO_GRAPH)
+    graphLoadedRef.current = true
+    setProgress(null)
+  }
+
   const handleRescan = async () => {
-    if (!selectedFolder) return
+    if (!selectedFolder || isDemoMode) return
     
     graphLoadedRef.current = false
     
@@ -181,12 +201,17 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>ImageGraph</h1>
+        {isDemoMode && (
+          <div className="demo-banner">✨ Demo Mode — <a href="https://github.com/irazvan85/image_graph" target="_blank" rel="noopener noreferrer" aria-label="Run ImageGraph locally — GitHub repository setup instructions">run locally</a> for full functionality</div>
+        )}
         <div className="header-actions">
           {selectedFolder && (
             <>
-              <button onClick={handleRescan} className="btn-secondary">
-                Rescan Folder
-              </button>
+              {!isDemoMode && (
+                <button onClick={handleRescan} className="btn-secondary">
+                  Rescan Folder
+                </button>
+              )}
               <button onClick={() => handleExport('json')} className="btn-secondary">
                 Export JSON
               </button>
@@ -196,6 +221,9 @@ function App() {
               <button onClick={() => handleExport('cypher')} className="btn-secondary">
                 Export Cypher
               </button>
+              <button onClick={() => { setSelectedFolder(null); setIsDemoMode(false); setGraph({ nodes: [], edges: [] }) }} className="btn-secondary">
+                ← Back
+              </button>
             </>
           )}
         </div>
@@ -203,11 +231,11 @@ function App() {
 
       <main className="app-main">
         {!selectedFolder ? (
-          <FolderSelector onSelect={handleFolderSelect} />
+          <FolderSelector onSelect={handleFolderSelect} onDemoSelect={handleDemoSelect} />
         ) : (
           <>
             <div className="sidebar">
-              <AnalyzerStatus />
+              {!isDemoMode && <AnalyzerStatus />}
               <Filters filters={filters} onFiltersChange={setFilters} />
               {progress && progress.status !== 'idle' && (
                 <ProgressBar progress={progress} />

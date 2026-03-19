@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './FolderSelector.css'
 
-function FolderSelector({ onSelect }) {
+function FolderSelector({ onSelect, onDemoSelect }) {
   const [folderPath, setFolderPath] = useState('')
 
   const handleSubmit = (e) => {
@@ -34,6 +34,20 @@ function FolderSelector({ onSelect }) {
             Start Analysis
           </button>
         </form>
+
+        <div className="demo-section">
+          <div className="demo-divider">
+            <span>or</span>
+          </div>
+          <button
+            type="button"
+            className="btn-demo"
+            onClick={onDemoSelect}
+          >
+            ✨ Try Demo
+          </button>
+          <p className="demo-hint">Explore a sample knowledge graph without a backend</p>
+        </div>
 
         <div className="info-box">
           <h3>Supported Formats</h3>
