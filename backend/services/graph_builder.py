@@ -253,7 +253,49 @@ class GraphBuilder:
                         "similarity": similarity
                     })
         
+        # Compute depth (Z-layer) for 3D visualization
+        # Images at depth 0 (concrete), concepts at depth 1+ based on connectivity
+        self._compute_node_depths(nodes, edges)
+        
         return {
             "nodes": nodes,
             "edges": edges
         }
+    
+    def _compute_node_depths(self, nodes: List[Dict], edges: List[Dict]):
+        """Compute semantic depth for each node for 3D visualization.
+        
+        Depth represents semantic abstraction level:
+        - Layer 0: Image nodes (most concrete)
+        - Layer 1: Direct concept nodes (tags/entities with few connections)
+        - Layer 2+: Hub/abstract concepts (highly connected concepts)
+        
+        The Z-axis encodes how abstract or central a concept is,
+        creating a visual hierarchy from concrete images to abstract themes.
+        """
+        # Count connections per concept node
+        concept_degree = {}
+        for edge in edges:
+            if edge.get("type") == "image_concept":
+                target = edge["target"]
+                concept_degree[target] = concept_degree.get(target, 0) + 1
+            elif edge.get("type") == "concept_concept":
+                src = edge["source"]
+                tgt = edge["target"]
+                concept_degree[src] = concept_degree.get(src, 0) + 1
+                concept_degree[tgt] = concept_degree.get(tgt, 0) + 1
+        
+        # Find max degree for normalization
+        max_degree = max(concept_degree.values()) if concept_degree else 1
+        
+        for node in nodes:
+            if node["type"] == "image":
+                node["depth"] = 0
+            elif node["type"] == "concept":
+                degree = concept_degree.get(node["id"], 0)
+                # Normalize degree to [1, 2] range
+                # depth=1 for leaf concepts, depth=2 for most connected hub concepts
+                normalized = degree / max_degree if max_degree > 0 else 0
+                node["depth"] = round(1 + normalized, 2)
+            else:
+                node["depth"] = 0

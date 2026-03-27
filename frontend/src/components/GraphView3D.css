@@ -1,0 +1,104 @@
+.graph-view-3d {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.graph-empty-3d {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #888;
+  font-size: 1.1rem;
+  background: #1a1a2e;
+}
+
+.graph-legend-3d {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(26, 26, 46, 0.92);
+  color: #e0e0e0;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  max-width: 260px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.graph-legend-3d h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.95rem;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 0.5rem;
+}
+
+.legend-section {
+  margin-bottom: 0.75rem;
+}
+
+.legend-section:last-of-type {
+  margin-bottom: 0.5rem;
+}
+
+.legend-subtitle {
+  font-size: 0.75rem;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.35rem;
+}
+
+.legend-item-3d {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.legend-color-3d {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-line-3d {
+  width: 24px;
+  height: 3px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.depth-legend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.depth-bar {
+  width: 8px;
+  height: 40px;
+  background: linear-gradient(to bottom, #e74c3c, #9b59b6, #3498db);
+  border-radius: 4px;
+}
+
+.depth-label {
+  font-size: 0.7rem;
+  color: #bbb;
+}
+
+.legend-controls {
+  font-size: 0.7rem;
+  color: #999;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 0.5rem;
+  text-align: center;
+}
