@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import FolderSelector from './components/FolderSelector'
 import GraphView from './components/GraphView'
+import GraphView3D from './components/GraphView3D'
 import ImageDetail from './components/ImageDetail'
 import ProgressBar from './components/ProgressBar'
 import Filters from './components/Filters'
@@ -14,6 +15,7 @@ function App() {
   const [graph, setGraph] = useState({ nodes: [], edges: [] })
   const [selectedImage, setSelectedImage] = useState(null)
   const [progress, setProgress] = useState(null)
+  const [viewMode, setViewMode] = useState('3d') // '2d' or '3d'
   const [filters, setFilters] = useState({
     min_confidence: 0.3,
     min_similarity: 0.7,
@@ -207,6 +209,20 @@ function App() {
         <div className="header-actions">
           {selectedFolder && (
             <>
+              <div className="view-toggle">
+                <button 
+                  onClick={() => setViewMode('2d')} 
+                  className={`btn-toggle ${viewMode === '2d' ? 'active' : ''}`}
+                >
+                  2D
+                </button>
+                <button 
+                  onClick={() => setViewMode('3d')} 
+                  className={`btn-toggle ${viewMode === '3d' ? 'active' : ''}`}
+                >
+                  3D
+                </button>
+              </div>
               {!isDemoMode && (
                 <button onClick={handleRescan} className="btn-secondary">
                   Rescan Folder
@@ -243,10 +259,17 @@ function App() {
             </div>
             
             <div className="graph-container">
-              <GraphView 
-                graph={graph} 
-                onNodeClick={handleNodeClick}
-              />
+              {viewMode === '3d' ? (
+                <GraphView3D 
+                  graph={graph} 
+                  onNodeClick={handleNodeClick}
+                />
+              ) : (
+                <GraphView 
+                  graph={graph} 
+                  onNodeClick={handleNodeClick}
+                />
+              )}
             </div>
 
             {selectedImage && (

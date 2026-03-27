@@ -5,67 +5,77 @@ export const DEMO_GRAPH = {
       id: 'img_mountain_lake',
       type: 'image',
       label: 'mountain_lake.jpg',
-      file_path: 'demo/mountain_lake.jpg'
+      file_path: 'demo/mountain_lake.jpg',
+      depth: 0
     },
     {
       id: 'img_city_night',
       type: 'image',
       label: 'city_night.jpg',
-      file_path: 'demo/city_night.jpg'
+      file_path: 'demo/city_night.jpg',
+      depth: 0
     },
     {
       id: 'img_forest_path',
       type: 'image',
       label: 'forest_path.jpg',
-      file_path: 'demo/forest_path.jpg'
+      file_path: 'demo/forest_path.jpg',
+      depth: 0
     },
     {
       id: 'img_beach_sunset',
       type: 'image',
       label: 'beach_sunset.png',
-      file_path: 'demo/beach_sunset.png'
+      file_path: 'demo/beach_sunset.png',
+      depth: 0
     },
     {
       id: 'concept_water',
       type: 'concept',
       label: 'Water',
       normalized_label: 'water',
-      concept_type: 'tag'
+      concept_type: 'tag',
+      depth: 1.57
     },
     {
       id: 'concept_nature',
       type: 'concept',
       label: 'Nature',
       normalized_label: 'nature',
-      concept_type: 'tag'
+      concept_type: 'tag',
+      depth: 2
     },
     {
       id: 'concept_mountains',
       type: 'concept',
       label: 'Mountains',
       normalized_label: 'mountains',
-      concept_type: 'tag'
+      concept_type: 'tag',
+      depth: 1.29
     },
     {
       id: 'concept_sunset',
       type: 'concept',
       label: 'Sunset',
       normalized_label: 'sunset',
-      concept_type: 'tag'
+      concept_type: 'tag',
+      depth: 1.14
     },
     {
       id: 'concept_urban',
       type: 'concept',
       label: 'Urban',
       normalized_label: 'urban',
-      concept_type: 'tag'
+      concept_type: 'tag',
+      depth: 1.14
     },
     {
       id: 'concept_trees',
       type: 'concept',
       label: 'Trees',
       normalized_label: 'trees',
-      concept_type: 'tag'
+      concept_type: 'tag',
+      depth: 1.43
     }
   ],
   edges: [

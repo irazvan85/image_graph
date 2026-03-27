@@ -73,3 +73,35 @@
   position: relative;
   background: #fafafa;
 }
+
+.view-toggle {
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #4a6a8a;
+}
+
+.btn-toggle {
+  padding: 0.5rem 1rem;
+  background: #34495e;
+  color: #aaa;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-toggle:first-child {
+  border-right: 1px solid #4a6a8a;
+}
+
+.btn-toggle:hover {
+  background: #3d566e;
+  color: #ddd;
+}
+
+.btn-toggle.active {
+  background: #2980b9;
+  color: white;
+}
