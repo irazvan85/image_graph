@@ -59,10 +59,11 @@ function GraphView3D({ graph, onNodeClick }) {
   // Focus camera on the graph after data changes
   useEffect(() => {
     if (fgRef.current && graphData.nodes.length > 0) {
-      // Wait for the force simulation to settle
+      // Scale timeout with graph size: larger graphs need more time to settle
+      const settleTime = Math.min(500 + graphData.nodes.length * 100, 3000)
       const timer = setTimeout(() => {
         fgRef.current.zoomToFit(400, 50)
-      }, 1500)
+      }, settleTime)
       return () => clearTimeout(timer)
     }
   }, [graphData])
@@ -97,7 +98,7 @@ function GraphView3D({ graph, onNodeClick }) {
       // Concept nodes: red sphere with label
       const group = new THREE.Group()
 
-      const radius = 4 + (node.depth - 1) * 4 // Larger for more connected concepts
+      const radius = 4 + Math.max(0, (node.depth - 1)) * 4 // Larger for more connected concepts
       const geometry = new THREE.SphereGeometry(radius, 16, 16)
       const material = new THREE.MeshLambertMaterial({
         color: NODE_COLORS.concept,
